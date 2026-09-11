@@ -1,0 +1,19 @@
+<template>
+    <div class="payment-element"></div>
+
+    <lightning-button
+        label="Pay now"
+        variant="brand"
+        onclick={handlePay}
+        disabled={loading}
+        class="slds-m-top_medium">
+    </lightning-button>
+
+    <template if:true={loading}>
+        <lightning-spinner alternative-text="Processing"></lightning-spinner>
+    </template>
+
+    <template if:true={message}>
+        <p class="slds-m-top_small">{message}</p>
+    </template>
+</template>
