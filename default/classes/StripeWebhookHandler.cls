@@ -2,13 +2,28 @@
 global without sharing class StripeWebhookHandler {
     @HttpPost
     global static void handleEvent() {
+        system.debug('webhook event called');
         RestRequest req = RestContext.request;
         String payload = req.requestBody.toString();
-
+		system.debug('payload--'+payload);
+        system.debug('header---'+req.headers.keySet());
+        
         // CRITICAL: verify the Stripe-Signature header before trusting anything
-        if (!StripeSignatureVerifier.isValid(
+        
+        String stripeSignature = null;
+        
+        // Loop through keys case-insensitively to guarantee extraction
+        for (String headerName : req.headers.keySet()) {
+            if (headerName.equalsIgnoreCase('Stripe-Signature')) {
+                stripeSignature = req.headers.get(headerName);
+                system.debug('stripeSignature---'+stripeSignature);
+                system.debug('stripe--'+headerName.equalsIgnoreCase('Stripe-Signature'));
+                break;
+            }
+        }
+		if (!StripeSignatureVerifier.isValid(
                 payload,
-                req.headers.get('Stripe-Signature'))) {
+                stripeSignature)) {
             RestContext.response.statusCode = 400;
             return;
         } 
