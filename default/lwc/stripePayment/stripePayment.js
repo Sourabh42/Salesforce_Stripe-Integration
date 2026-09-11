@@ -30,7 +30,7 @@ export default class StripePayment extends LightningElement {
     }
 
     async initStripe() {
-        await loadScript(this, STRIPE_JS);
+         await loadScript(this, STRIPE_JS);
         this.stripe = window.Stripe(this.publishableKey);
         this.elements = this.stripe.elements({ clientSecret: this.clientSecret });
         console.log('elements---', this.elements);
@@ -41,13 +41,15 @@ export default class StripePayment extends LightningElement {
     async handlePay() {
         this.loading = true;
         this.message = null;
+        console.log('URL---',window.location.origin );
         const { error } = await this.stripe.confirmPayment({
             elements: this.elements,
-            confirmParams: { return_url: window.location.origin + '/payment-complete' },
+            confirmParams: { return_url: window.location.origin + '/s/payment-complete' },
             redirect: 'if_required'
         });
         this.loading = false;
         this.message = error ? error.message : 'Payment successful!';
+        console.log('message---',this.message);
         if (!error) this.dispatchEvent(new CustomEvent('success'));
     }
 }
